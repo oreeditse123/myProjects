@@ -1,0 +1,72 @@
+@model devDynast.Models.Rating
+
+<h2>Rate Item</h2>
+
+<form asp-action="Create" method="post">
+    <input type="hidden" asp-for="ItemId" value="@ViewBag.ItemId" />
+
+    <!-- Rating from 1 to 5 -->
+    <div class="form-group">
+        <label asp-for="RatingValue" class="control-label">Rate (1 to 5):</label>
+        <select asp-for="RatingValue" class="form-control" required>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+        </select>
+        <span asp-validation-for="RatingValue" class="text-danger"></span>
+    </div>
+
+    <!-- Comment -->
+    <div class="form-group">
+        <label asp-for="Comment" class="control-label">Comment:</label>
+        <textarea asp-for="Comment" class="form-control" required></textarea>
+        <span asp-validation-for="Comment" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <input type="submit" value="Submit Rating" class="btn btn-primary" />
+    </div>
+</form>
+
+<a asp-action="Index" class="btn btn-secondary">Back to Items</a>
+
+<!-- Toast for success/error -->
+<div id="toast" class="toast" style="position: fixed; top: 20px; right: 20px; z-index: 9999; display: none;">
+    <div class="toast-body" style="background-color: blue; color: white;"></div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('form').on('submit', function (e) {
+            e.preventDefault();
+            var form = $(this);
+            $.ajax({
+                type: form.attr('method'),
+                url: form.attr('action'),
+                data: form.serialize(),
+                success: function (response) {
+                    showToast(response.message, true);
+                },
+                error: function (xhr) {
+                    showToast('An error occurred while submitting the rating.', false);
+                }
+            });
+        });
+
+        function showToast(message, success) {
+            var toastBody = $('#toast .toast-body');
+            toastBody.text(message);
+
+            if (success) {
+                toastBody.css('background-color', 'green');
+            } else {
+                toastBody.css('background-color', 'red');
+            }
+
+            $('#toast').fadeIn().delay(3000).fadeOut();
+        }
+    });
+</script>
